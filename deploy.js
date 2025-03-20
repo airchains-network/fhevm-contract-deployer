@@ -25,7 +25,7 @@ async function main() {
         ".env.exec",
         ["FHEVM_COPROCESSOR_ADDRESS"],
     );
-    await deployCoreContract(
+    const tfhe_executor_contract_address = await deployCoreContract(
         privateKeyCore,
         networkUrl,
         "lib",
@@ -51,12 +51,15 @@ async function main() {
         [deployerAddressGateway, "KMS_VERIFIER_CONTRACT_ADDRESS"],
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setTimeout(() => {
+
+    }, 3000);
     await setupRelayer(privateKeyGateway, networkUrl, privateKeyRelayer);
     console.log("Gateway Contract Address: ", gateway_contract_address);
     console.log("Relayer Address: ", privateKeyRelayer);
 
     const deploymentData = {
+        tfhe_executor_contract_address,
         gateway_contract_address,
         relayer_private_key: privateKeyRelayer
     }

@@ -22,6 +22,8 @@ async function addRelayer(
 
   const provider = new JsonRpcProvider(networkUrl);
 
+  await new Promise(resolve => setTimeout(resolve, 5000));
+
   // Ensure that the gateway contract is deployed at the given address
   const codeAtAddress = await provider.getCode(gatewayAddress);
   if (codeAtAddress === "0x") {
