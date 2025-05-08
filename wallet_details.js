@@ -86,7 +86,7 @@ async function walletDetails() {
     deploymentData.relayerGAddress = relayerAddress;
 
     writeFileSync(`${output}/init_rollup_fhe_keys.json`, JSON.stringify(deploymentData, null, 2));
-    console.log("Wallets and contract addresses have been computed and saved to deployment_config.json");
+    console.log("Wallets and contract addresses have been computed and saved to init_rollup_fhe_keys.json");
 }
 
 (async () => {
