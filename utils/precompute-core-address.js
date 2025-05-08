@@ -8,7 +8,7 @@ dotenv.config();
 const CONTRACTS_DIR = path.resolve(process.cwd(), "contracts/lib");
 const GATEWAY_DIR = path.resolve(process.cwd(), "contracts/gateway/lib");
 
-function computeCreateAddress(from, nonce) {
+export function computeCreateAddress(from, nonce) {
   return getCreateAddress({ from, nonce });
 }
 
