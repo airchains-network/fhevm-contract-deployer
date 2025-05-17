@@ -26,7 +26,7 @@ export function getEnvironmentVariables() {
   let privateKey;
 
   if (privateKeyIndex > -1 && privateKeyIndex + 1 < process.argv.length) {
-    mnemonic = process.argv[privateKeyIndex + 1];
+    privateKey = process.argv[privateKeyIndex + 1];
   } else {
     console.error("Error: Please provide the private keys using the --private-key flag.");
     process.exit(1);
