@@ -6,14 +6,14 @@ import { computeCoreAddresses } from "./utils/precompute-core-address.js";
 import { deriveWalletsAndDetails } from "./utils/wallet.js";
 
 async function main() {
-    const { networkUrl, mnemonic } = getEnvironmentVariables();
+    const { networkUrl, mnemonic, privateKey, output } = getEnvironmentVariables();
     const {
         deployerAddressCore,
         privateKeyCore,
         deployerAddressGateway,
         privateKeyGateway,
         privateKeyRelayer,
-    } = await deriveWalletsAndDetails(mnemonic);
+    } = await deriveWalletsAndDetails(networkUrl, privateKey, mnemonic);
     await computeCoreAddresses(deployerAddressCore, deployerAddressGateway);
 
     await deployCoreContract(
@@ -64,7 +64,7 @@ async function main() {
         relayer_private_key: privateKeyRelayer
     }
 
-    writeFileSync('deployment_config.json', JSON.stringify(deploymentData, null, 2));
+    writeFileSync(`${output}/fhe_config.json`, JSON.stringify(deploymentData, null, 2));
     console.log('Deployment configuration saved to deployment_config.json');
 }
 

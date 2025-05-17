@@ -15,7 +15,7 @@ export function deriveAddressesFromMnemonic(mnemonic, count = 10) {
   return addresses;
 }
 
-export async function deriveWalletsAndDetails(mnemonic) {
+export async function deriveWalletsAndDetails(networkUrl, privateKey, mnemonic) {
   const seed = mnemonicToSeedSync(mnemonic);
   const hdWallet = hdkey.EthereumHDKey.fromMasterSeed(seed);
 
@@ -41,7 +41,7 @@ export async function deriveWalletsAndDetails(mnemonic) {
     relayerAddress
   ];
 
-  await sendTokens(recipientAddresses);
+  await sendTokens(networkUrl, privateKey, recipientAddresses);
 
   return {
     deployerAddressCore,
@@ -53,13 +53,13 @@ export async function deriveWalletsAndDetails(mnemonic) {
 }
 
 
-async function sendTokens(recipientAddresses) {
+async function sendTokens(networkUrl, privateKey, recipientAddresses) {
 
-  const amountToSend = parseEther("1000");
+  const amountToSend = parseEther("10");
 
-  const provider = new JsonRpcProvider(process.env.NETWORK_URL);
+  const provider = new JsonRpcProvider(networkUrl);
 
-  const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
+  const wallet = new Wallet(privateKey, provider);
 
   for (const address of recipientAddresses) {
     try {
