@@ -8,7 +8,7 @@ export function getEnvironmentVariables() {
   if (networkUrlIndex > -1 && networkUrlIndex + 1 < process.argv.length) {
     mnemonic = process.argv[networkUrlIndex + 1];
   } else {
-    console.error(formatDate(), "Error: Please provide the network url using the --network-url flag.");
+    console.error("Error: Please provide the network url using the --network-url flag.");
     process.exit(1);
   }
 
@@ -18,7 +18,7 @@ export function getEnvironmentVariables() {
   if (mnemonicFlagIndex > -1 && mnemonicFlagIndex + 1 < process.argv.length) {
     mnemonic = process.argv[mnemonicFlagIndex + 1];
   } else {
-    console.error(formatDate(), "Error: Please provide the mnemonic using the --mnemonic flag.");
+    console.error("Error: Please provide the mnemonic using the --mnemonic flag.");
     process.exit(1);
   }
 
@@ -28,7 +28,7 @@ export function getEnvironmentVariables() {
   if (privateKeyIndex > -1 && privateKeyIndex + 1 < process.argv.length) {
     mnemonic = process.argv[privateKeyIndex + 1];
   } else {
-    console.error(formatDate(), "Error: Please provide the private keys using the --private-key flag.");
+    console.error("Error: Please provide the private keys using the --private-key flag.");
     process.exit(1);
   }
 
@@ -38,7 +38,7 @@ export function getEnvironmentVariables() {
   if (outputFlagIndex > -1 && outputFlagIndex + 1 < process.argv.length) {
     output = process.argv[outputFlagIndex + 1];
   } else {
-    console.error(formatDate(), "Error: Please provide the output using the --output flag.");
+    console.error("Error: Please provide the output using the --output flag.");
     process.exit(1);
   }
 
