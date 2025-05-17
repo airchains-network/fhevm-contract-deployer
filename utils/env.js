@@ -6,7 +6,7 @@ export function getEnvironmentVariables() {
   let networkUrl;
 
   if (networkUrlIndex > -1 && networkUrlIndex + 1 < process.argv.length) {
-    mnemonic = process.argv[networkUrlIndex + 1];
+    networkUrl = process.argv[networkUrlIndex + 1];
   } else {
     console.error("Error: Please provide the network url using the --network-url flag.");
     process.exit(1);
