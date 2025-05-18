@@ -4,8 +4,8 @@ import path from "path";
 
 dotenv.config();
 
-export function loadABI(contractName) {
-  const abiPath = path.resolve(process.cwd(), "build", `${contractName}.json`);
+export function loadABI(output, contractName) {
+  const abiPath = path.resolve(output, "build", `${contractName}.json`);
   if (!fs.existsSync(abiPath)) {
     throw new Error(`ABI file not found for ${contractName} at ${abiPath}`);
   }

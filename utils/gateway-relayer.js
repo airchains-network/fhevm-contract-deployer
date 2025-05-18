@@ -8,6 +8,7 @@ dotenv.config();
 
 // Function to add a relayer to the gateway contract
 async function addRelayer(
+  output,
   gatewayOwnerPrivateKey,
   gatewayAddress,
   networkUrl,
@@ -30,7 +31,7 @@ async function addRelayer(
     throw new Error(`Gateway contract not found at: ${gatewayAddress}`);
   }
 
-  const abi = loadABI("GatewayContract");
+  const abi = loadABI(output, "GatewayContract");
   const ownerWallet = new Wallet(gatewayOwnerPrivateKey, provider);
   const gatewayContract = new Contract(gatewayAddress, abi, ownerWallet);
 
@@ -54,12 +55,13 @@ async function addRelayer(
 
 // Function to set up the relayer
 export async function setupRelayer(
+  output,
   privateKeyGateway,
   networkUrl,
   privateKeyRelayer,
 ) {
   const envFilePath = path.resolve(
-    process.cwd(),
+    output,
     "contracts/gateway/lib/.env.gateway",
   );
 
@@ -91,6 +93,7 @@ export async function setupRelayer(
 
   // Add the relayer to the gateway contract
   await addRelayer(
+    output,
     privateKeyGateway,
     gatewayAddress,
     networkUrl,

@@ -58,7 +58,7 @@ async function main() {
     setTimeout(() => {
 
     }, 3000);
-    await setupRelayer(privateKeyGateway, networkUrl, privateKeyRelayer);
+    await setupRelayer(output, privateKeyGateway, networkUrl, privateKeyRelayer);
     console.log("Gateway Contract Address: ", gateway_contract_address);
     console.log("Relayer Address: ", privateKeyRelayer);
 
