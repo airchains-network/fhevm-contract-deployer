@@ -2,24 +2,13 @@ import solc from "solc";
 import fs from "fs";
 import path from "path";
 
-const OUTPUT_DIR = path.resolve(process.cwd(), "build");
-const CONTRACTS_DIR = path.resolve(process.cwd(), "contracts");
-
 // Ensure the output directory exists
-function ensureOutputDirExists() {
-  if (!fs.existsSync(OUTPUT_DIR)) {
-    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+function ensureOutputDirExists(output) {
+  if (!fs.existsSync(output)) {
+    fs.mkdirSync(output, { recursive: true });
   }
 }
 
-// Read the source code of the contract from the file
-function readContractSource(relativePath) {
-  const contractPath = path.resolve(CONTRACTS_DIR, relativePath);
-  if (!fs.existsSync(contractPath)) {
-    throw new Error(`Contract file not found: ${relativePath}`);
-  }
-  return fs.readFileSync(contractPath, "utf8");
-}
 
 // Create the input format required by the Solidity compiler
 function createCompilerInput(relativePath, source) {
@@ -40,28 +29,30 @@ function createCompilerInput(relativePath, source) {
   };
 }
 
-// Custom import handler for Solidity compiler to resolve imports
-function findImports(importPath) {
-  try {
-    let fullPath = path.resolve(CONTRACTS_DIR, importPath);
-    if (fs.existsSync(fullPath)) {
-      return { contents: fs.readFileSync(fullPath, "utf8") };
-    }
-    fullPath = path.resolve(process.cwd(), "node_modules", importPath);
-    if (fs.existsSync(fullPath)) {
-      return { contents: fs.readFileSync(fullPath, "utf8") };
-    }
-    console.log(`Import file not found: ${importPath}`);
-    throw new Error(`Import file not found: ${importPath}`);
-  } catch (error) {
-    return { error: error.message };
-  }
-}
+
 
 // Compile the contract using the Solidity compiler
-function compileContract(input) {
-  const output = solc.compile(JSON.stringify(input), { import: findImports });
-  return JSON.parse(output);
+function compileContract(output, input) {
+  // Custom import handler for Solidity compiler to resolve imports
+  function findImports(importPath) {
+    const CONTRACTS_DIR = path.join(output, "contracts");
+    try {
+      let fullPath = path.resolve(CONTRACTS_DIR, importPath);
+      if (fs.existsSync(fullPath)) {
+        return { contents: fs.readFileSync(fullPath, "utf8") };
+      }
+      fullPath = path.resolve(process.cwd(), "node_modules", importPath);
+      if (fs.existsSync(fullPath)) {
+        return { contents: fs.readFileSync(fullPath, "utf8") };
+      }
+      console.log(`Import file not found: ${importPath}`);
+      throw new Error(`Import file not found: ${importPath}`);
+    } catch (error) {
+      return { error: error.message };
+    }
+  }
+  const output_json = solc.compile(JSON.stringify(input), { import: findImports });
+  return JSON.parse(output_json);
 }
 
 // Handle compilation errors, ignore warnings
@@ -80,8 +71,9 @@ function extractCompiledContract(output, relativePath) {
 }
 
 // Write the ABI to a file
-function writeABIToFile(relativePath, abi) {
-  ensureOutputDirExists();
+function writeABIToFile(output, relativePath, abi) {
+  const OUTPUT_DIR = path.join(output, "build");
+  ensureOutputDirExists(OUTPUT_DIR);
   const abiPath = path.join(
     OUTPUT_DIR,
     `${path.basename(relativePath, ".sol")}.json`,
@@ -90,21 +82,30 @@ function writeABIToFile(relativePath, abi) {
   console.log(`ABI written to ${abiPath}`);
 }
 
+
+// Read the source code of the contract from the file
+function readContractSource(output, relativePath) {
+  const CONTRACTS_DIR = path.join(output, "contracts");
+  const contractPath = path.resolve(CONTRACTS_DIR, relativePath);
+  if (!fs.existsSync(contractPath)) {
+    throw new Error(`Contract file not found: ${relativePath}`);
+  }
+  return fs.readFileSync(contractPath, "utf8");
+}
+
 // Compile a contract by relative path from the contracts directory
-export async function getCompiledContract(relativePath) {
+export async function getCompiledContract(output, relativePath) {
   try {
     console.log(`Compiling contract: ${relativePath}`);
-    const source = readContractSource(relativePath);
+    const source = readContractSource(output, relativePath);
     const input = createCompilerInput(relativePath, source);
-    const output = compileContract(input);
-
-    // console.log(`Compilation Output: ${JSON.stringify(output, null, 2)}`);
+    const contract_output = compileContract(output, input);
 
     if (output.errors) {
       handleCompilationErrors(output.errors);
     }
 
-    const compiledContract = extractCompiledContract(output, relativePath);
+    const compiledContract = extractCompiledContract(contract_output, relativePath);
 
     if (!compiledContract.evm || !compiledContract.evm.bytecode) {
       throw new Error(
@@ -112,7 +113,8 @@ export async function getCompiledContract(relativePath) {
       );
     }
 
-    writeABIToFile(relativePath, compiledContract.abi);
+    writeABIToFile(output, relativePath, compiledContract.abi);
+
     return compiledContract;
   } catch (error) {
     console.log(`Error compiling contract ${relativePath}: ${error.message}`);

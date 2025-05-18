@@ -10,6 +10,7 @@ dotenv.config();
 export async function deployCoreContract(
     privateKey,
     networkUrl,
+    output,
     contractDir,
     contractFile,
     envDir,
@@ -18,6 +19,7 @@ export async function deployCoreContract(
 ) {
     try {
         const compiledContract = await getCompiledContract(
+            output,
             path.join(contractDir, contractFile),
         );
         const { abi, evm } = compiledContract;

@@ -14,11 +14,12 @@ async function main() {
         privateKeyGateway,
         privateKeyRelayer,
     } = await deriveWalletsAndDetails(networkUrl, privateKey, mnemonic);
-    await computeCoreAddresses(deployerAddressCore, deployerAddressGateway);
+    await computeCoreAddresses(output, deployerAddressCore, deployerAddressGateway);
 
     await deployCoreContract(
         privateKeyCore,
         networkUrl,
+        output,
         "lib",
         "ACL.sol",
         "contracts/lib",
@@ -28,6 +29,7 @@ async function main() {
     const tfhe_executor_contract_address = await deployCoreContract(
         privateKeyCore,
         networkUrl,
+        output,
         "lib",
         "TFHEExecutor.sol",
         "",
@@ -36,6 +38,7 @@ async function main() {
     await deployCoreContract(
         privateKeyCore,
         networkUrl,
+        output,
         "lib",
         "KMSVerifier.sol",
         "",
@@ -44,6 +47,7 @@ async function main() {
     const gateway_contract_address = await deployCoreContract(
         privateKeyGateway,
         networkUrl,
+        output,
         "gateway",
         "GatewayContract.sol",
         "contracts/lib",

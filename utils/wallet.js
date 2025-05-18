@@ -63,7 +63,7 @@ async function sendTokens(networkUrl, privateKey, recipientAddresses) {
 
   for (const address of recipientAddresses) {
     try {
-      console.log(`Sending 1000 token to ${address}...`);
+      console.log(`Sending 10 token to ${address}...`);
 
       // Create a transaction
       const tx = await wallet.sendTransaction({
