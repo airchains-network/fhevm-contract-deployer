@@ -9,7 +9,6 @@ function ensureOutputDirExists(output) {
   }
 }
 
-
 // Create the input format required by the Solidity compiler
 function createCompilerInput(relativePath, source) {
   return {
@@ -29,22 +28,26 @@ function createCompilerInput(relativePath, source) {
   };
 }
 
-
-
 // Compile the contract using the Solidity compiler
 function compileContract(output, input) {
   // Custom import handler for Solidity compiler to resolve imports
   function findImports(importPath) {
     const CONTRACTS_DIR = path.join(output, "contracts");
+    const NODE_MODULES_DIR = path.join(output, "node_modules");
+    
     try {
+      // First try in the contracts directory
       let fullPath = path.resolve(CONTRACTS_DIR, importPath);
       if (fs.existsSync(fullPath)) {
         return { contents: fs.readFileSync(fullPath, "utf8") };
       }
-      fullPath = path.resolve(process.cwd(), "node_modules", importPath);
+      
+      // Then try in node_modules
+      fullPath = path.resolve(NODE_MODULES_DIR, importPath);
       if (fs.existsSync(fullPath)) {
         return { contents: fs.readFileSync(fullPath, "utf8") };
       }
+      
       console.log(`Import file not found: ${importPath}`);
       throw new Error(`Import file not found: ${importPath}`);
     } catch (error) {
@@ -82,7 +85,6 @@ function writeABIToFile(output, relativePath, abi) {
   console.log(`ABI written to ${abiPath}`);
 }
 
-
 // Read the source code of the contract from the file
 function readContractSource(output, relativePath) {
   const CONTRACTS_DIR = path.join(output, "contracts");
@@ -101,8 +103,8 @@ export async function getCompiledContract(output, relativePath) {
     const input = createCompilerInput(relativePath, source);
     const contract_output = compileContract(output, input);
 
-    if (output.errors) {
-      handleCompilationErrors(output.errors);
+    if (contract_output.errors) {
+      handleCompilationErrors(contract_output.errors);
     }
 
     const compiledContract = extractCompiledContract(contract_output, relativePath);
